@@ -8,7 +8,8 @@ Einfaches Python-Script, dass es erlaubt mehrere PDFs zusammenzufügen und mit e
 python3 main.py \
 --csv-file "./resources/empfaenger.csv" \
 --pdfs "./resources/pdf1.pdf,./resources/pdf2.pdf,./resources/pdf3.pdf" \
---output "./output/Test.pdf"
+--output "./output/Test.pdf" \
+--merge
 ```
 
 

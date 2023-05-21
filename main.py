@@ -17,7 +17,8 @@ class PDFAnnotator:
         self.c = Canvas(self.packet,
                         pagesize=(self.template_pages[0].mediabox.width, self.template_pages[0].mediabox.height))
 
-    def addText(self, text, point):
+    def addText(self, text, point, bold_font=False, font_size=12):
+        self.c.setFont("Helvetica-Bold" if bold_font else "Helvetica", font_size)
         self.c.drawString(point[0], point[1], text)
 
     def merge(self):
@@ -51,7 +52,7 @@ def main():
     """)
     parser.add_argument('--csv-file', help='Path of the CSV file containing the names')
     parser.add_argument('--pdfs', help='Path of the PDF files containing the letter')
-
+    parser.add_argument('--merge', help='Merge the PDF files into a single document', action='store_true')
     parser.add_argument('--output', help='Path of the output file name')
 
     args = parser.parse_args()
@@ -73,17 +74,21 @@ def main():
     # i.g. only pdfs_file_name that are marked as true in the corresponding column
     merger = PdfMerger()
 
-    for _, row in df.iterrows():
+    for i, row in df.iterrows():
+
+        dict_row = dict(row)
+        name = str(dict_row['Ceviname'])
+        if name == "nan":
+            name = str(dict_row['Vorname'])
 
         for i, pdf_file_name in enumerate(pdfs_file_name):
 
             # convert the row into a dictionary and check if the pdf_file_name is marked as true
-            dict_row = dict(row)
             if pdf_file_name in dict_row and dict_row[pdf_file_name]:
                 # annotate the PDF
                 annotator = PDFAnnotator(pdfs_files[i])
-                annotator.addText(dict_row['Vorname'], (500, 800))
-                annotator.addText(dict_row['Nachname'], (500, 780))
+                annotator.addText(name, (50, 795), bold_font=True, font_size=16)
+                annotator.addText(f"({dict_row['Abteilung']})", (50, 778))
                 annotator.generate("temp.pdf")
 
                 # append to master document and delete the temporary file
@@ -95,9 +100,19 @@ def main():
             if page_count % 2 != 0:
                 merger.append('empty.pdf')
 
-    # write the merged pdf to a file
-    merger.write(output_file)
-    merger.close()
+        # save the pdf if not merging
+        if not args.merge:
+            output_file_name = f"{name}_{dict_row['Abteilung']}.pdf"
+            path_of_output_file = '/'.join(output_file.split('/')[0:-1])
+
+            # write the merged pdf to a file
+            merger.write(path_of_output_file + '/' + output_file_name)
+            merger.close()
+            merger = PdfMerger()
+
+    if args.merge:
+        merger.write(output_file)
+        merger.close()
 
 
 if __name__ == '__main__':
