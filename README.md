@@ -6,18 +6,14 @@ Einfaches Python-Script, dass es erlaubt mehrere PDFs zusammenzufügen und mit e
 
 ```bash
 python3 main.py \
---csv-file "./resources/empfaenger.csv" \
---pdfs "./resources/pdf1.pdf,./resources/pdf2.pdf,./resources/pdf3.pdf" \
---output "./output/Test.pdf" \
---merge
+  --csv-file "./resources/empfaenger.csv" \
+  --output "./output/Serienbrief.pdf" \
+  --pdf-base-path "./resources"
 ```
-
 
 ## CSV-File
 
 ```csv
-Vorname,Nachname,pdf1,pdf2,pdf3
-Cyrill,Püntener,True,False,True
-Tim,Tester,True,True,True
-Max,Musterman,True,False,False
+Vorname,Nachname,Ceviname,Abteilung,Gruppe,pdf_Infobrief,pdf_TNK,pdf_Geschichte,pdf_Spiel,pdf_Knoten
+Cyrill,Püntener,JPG,Z11,1,1,1,5,6,7
 ```
